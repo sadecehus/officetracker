@@ -1,6 +1,11 @@
 // API fonksiyonları - Backend ile iletişim için
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api"
 
+// Debug için console'a yazdır
+if (typeof window !== "undefined") {
+  console.log('API_BASE_URL:', API_BASE_URL)
+}
+
 class ApiClient {
   private token: string | null = null
   private tokenExpiry: number | null = null
@@ -29,6 +34,7 @@ class ApiClient {
     this.checkTokenValidity()
 
     const url = `${API_BASE_URL}${endpoint}`
+    console.log('API Request URL:', url) // Debug için
 
     const config: RequestInit = {
       headers: {
@@ -42,6 +48,10 @@ class ApiClient {
     try {
       const response = await fetch(url, config)
       
+      // Response'un content-type'ını kontrol et
+      const contentType = response.headers.get("content-type")
+      console.log('Response Status:', response.status, 'Content-Type:', contentType)
+      
       // 401 durumunda token geçersiz, logout yap
       if (response.status === 401) {
         this.logout()
@@ -51,10 +61,17 @@ class ApiClient {
         throw new Error("Oturum süresi dolmuş. Lütfen tekrar giriş yapın.")
       }
 
+      // Response boşsa veya JSON değilse
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await response.text()
+        console.error('Non-JSON Response:', text)
+        throw new Error(`Server yanıtı JSON formatında değil. Status: ${response.status}`)
+      }
+
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.message || "API request failed")
+        throw new Error(data.message || `API request failed with status ${response.status}`)
       }
 
       return data
