@@ -37,3 +37,4 @@ temp/
 
 # Runtime
 .pid
+frontend/vercel.json
