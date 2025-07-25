@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "nodemon src/server.ts",
-    "build": "npm install && npx tsc",
-    "build:railway": "npm install typescript ts-node --save-dev && npm run build",
+    "build": "npx tsc",
+    "postinstall": "npm run build",
     "test": "jest",
     "seed": "ts-node src/scripts/seed.ts"
   },
