@@ -37,9 +37,15 @@ const limiter = rateLimit({
 app.use(helmet());
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.FRONTEND_URL || 'https://your-vercel-app.vercel.app']
+    ? [
+        process.env.FRONTEND_URL || 'https://your-vercel-app.vercel.app',
+        'https://officetracker-mu.vercel.app',
+        'https://*.vercel.app'
+      ]
     : ['http://localhost:3000', 'http://localhost:3002'],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(compression());
 app.use(morgan('combined'));
